@@ -1,7 +1,8 @@
 # Deployment auf Cloudflare Pages
 
-Noch nicht ausgeführt – erst nach Onurs OK (GitHub-Repo, Push,
-Cloudflare).
+Stand 2026-10-25: GitHub erledigt (Schritt 1, Repo
+`github.com/onurkoc/shear-check`, Branch `main`). Cloudflare offen
+(Schritte 2–6).
 
 Die App ist statisch: Der Ordner `app/` wird so ausgeliefert, wie er im
 Repo liegt. Kein Build-Schritt, kein Server.
@@ -9,7 +10,7 @@ Repo liegt. Kein Build-Schritt, kein Server.
 | | |
 | --- | --- |
 | Hosting | Cloudflare Pages, eigenes Projekt nur für diese App |
-| Repo (Vorschlag) | `github.com/onurkoc/shear-check` |
+| Repo | `github.com/onurkoc/shear-check` |
 | Produktions-Branch | `main` |
 | Ausgabeordner | `app` |
 | Build-Befehl | keiner |

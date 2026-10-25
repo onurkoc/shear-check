@@ -1,0 +1,42 @@
+{
+  "_readme": [
+    "Results of a commercial program, calculated by Onur Koc (screenshots and project local, not in the repo).",
+    "The commercial program prints rounded values (m_Rd with one decimal, numerical integration).",
+    "Units kN/m, kNm/m, m, per mille; sign of the commercial program: compression negative.",
+    "commercial_type2: concrete diagram type 2 of the commercial program (parabola up to 2 per mille, then constant up to",
+    "3.5 per mille) = the model of the app. Used for part A (M-N core), tolerance 0.5 % relative.",
+    "commercial_sc: commercial type 4 (SC, SIA 262 Gl. 27) - model difference, no test of the core.",
+    "Its shear values (eps_v, k_d, d, v_Rd) are the inputs of parts B and C (building blocks).",
+    "Further differences of the commercial program from the app (SIA 262:2025), see NOTES.md section 7:",
+    "k_g without the lower limit 1.2 (SIA 262:2013), eta_fc = (30/f_ck)^(1/3), d != h - c in the",
+    "shear check, m_Rd in the shear check with a proportionally increased N."
+  ],
+  "section": {
+    "h": 0.30, "c_p": 0.05, "c_n": 0.05, "a_sp": 5.65, "a_sn": 5.65,
+    "f_ck": 30, "f_yk": 500, "gamma_c": 1.5, "gamma_s": 1.15, "eta_t": 1.0,
+    "eps_cu": 0.0035, "eps_s_max": 0.012, "d_max": 32, "level": "level2"
+  },
+  "tolerance_m_rd": 0.005,
+  "cases": [
+    { "id": "Fall_1", "n": 0, "m": 20, "v": 80,
+      "commercial_type2": { "m_rd": 63.5, "n_limit": 0 },
+      "commercial_sc": { "_note": "kommerzielles Programm Typ 4 (SC, Gl. 27) - Modellunterschied, kein Test",
+                    "m_rd": 64.2, "n_limit": 0, "eps_v": 0.7, "k_d": 0.895, "tau_cd": 1.1,
+                    "d": 0.18, "v_rd": 174.9 } },
+    { "id": "Fall_2", "n": 0, "m": -30, "v": 100,
+      "commercial_type2": { "m_rd": -63.5, "n_limit": 0 },
+      "commercial_sc": { "_note": "kommerzielles Programm Typ 4 (SC, Gl. 27) - Modellunterschied, kein Test",
+                    "m_rd": -64.2, "n_limit": 0, "eps_v": 1.0, "k_d": 0.85, "tau_cd": 1.1,
+                    "d": 0.18, "v_rd": 166.1 } },
+    { "id": "Fall_3", "n": -500, "m": 20, "v": 80,
+      "commercial_type2": { "_info": "limit state point of the shear run, information only, no test",
+                       "m_rd_limit": 185.3, "n_limit": -4635.6,
+                       "_info_part_d": "shear data of the type 2 run",
+                       "k_d": 0.936, "d": 0.30, "v_rd": 308.8 },
+      "commercial_type2_constant_n": { "_source": "QS-1, commercial type 2, general interaction diagram, N constant, m_Rd at M_z = 0",
+                                  "n": -4600, "m_rd": 188.0 },
+      "commercial_sc": { "_note": "kommerzielles Programm Typ 4 (SC, Gl. 27) - Modellunterschied, kein Test",
+                    "m_rd": 187.0, "n_limit": -4677, "eps_v": 0.2, "k_d": 0.936, "tau_cd": 1.1,
+                    "d": 0.30, "v_rd": 309.0 } }
+  ]
+}

@@ -1,0 +1,14 @@
+.DS_Store
+.idea
+.vscode
+node_modules
+
+# local working files and project data, not for the public repo
+# Legacy/ – old local working files, not for the repo
+Legacy/
+# local reference project files (company header) are excluded in
+# .git/info/exclude; the reference values are in tests/reference/
+# Onur's EC2 Excel check sheet; the reference values are in cases.json
+EC2/
+CLAUDE.md
+STATUS.md

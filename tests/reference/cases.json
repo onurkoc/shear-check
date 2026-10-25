@@ -1,0 +1,132 @@
+{
+  "_readme": [
+    "Reference cases. The expected values come from Onur, from a recognised program;",
+    "they are not calculated by this app. As long as a value is null the test is a todo.",
+    "Units: h, c, d_v in m; a_s in cm2/m; f in N/mm2; d_max in mm; n, v in kN/m, m in kNm/m.",
+    "n: compression positive (sign as used for the check, not as in a Plaxis file).",
+    "m > 0: tension side 'p' (a_sp, c_p); m < 0: tension side 'n' (a_sn, c_n).",
+    "d_vp / d_vn: null means d = h - c.",
+    "tolerance: relative, |actual - expected| <= tolerance * |expected|.",
+    "m_rd: signed like the commercial program, negative for m < 0 (tension side n); [kNm/m].",
+    "eps_v in per mille.",
+    "SIA m_rd (2026-10-24): commercial program, general interaction diagram, N constant, concrete diagram type 2, eps_cu 3.5 per mille, eps_su 12 per mille. eps_v, k_d, v_rd, utilization (2026-10-24): hand calculation Onur, Excel SIA262_Querkraft_Kontrolle, with m_Rd from the commercial program."
+  ],
+  "en1992": [
+    {
+      "id": "EN-1", "description": "compression, (6.2.b) governs",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "f_ck": 30, "gamma_c": 1.5, "alpha_cc": 1.0, "c_rd_c_gamma": 0.18, "k_1": 0.15,
+                 "n": 500, "m": 20, "v": 100 },
+      "expected": { "v_rd": 187.46, "utilization": 0.5334 }, "tolerance": 0.005,
+      "source": "Excel-Sheet Onur, EN 1992-1-1 6.2.2"
+    },
+    {
+      "id": "EN-2", "description": "tension, sigma_cp < 0 (decision F1)",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "f_ck": 30, "gamma_c": 1.5, "alpha_cc": 1.0, "c_rd_c_gamma": 0.18, "k_1": 0.15,
+                 "n": -200, "m": 20, "v": 60 },
+      "expected": { "v_rd": 99.96, "utilization": 0.6002 }, "tolerance": 0.005,
+      "source": "Excel-Sheet Onur, EN 1992-1-1 6.2.2"
+    },
+    {
+      "id": "EN-3", "description": "small A_sl, nu_min (6.2.b) governs",
+      "input": { "h": 0.25, "a_sp": 0.5, "c_p": 0.05, "a_sn": 0.5, "c_n": 0.05,
+                 "f_ck": 25, "gamma_c": 1.5, "alpha_cc": 1.0, "c_rd_c_gamma": 0.18, "k_1": 0.15,
+                 "n": 300, "m": 10, "v": 80 },
+      "expected": { "v_rd": 134.99, "utilization": 0.5926 }, "tolerance": 0.005,
+      "source": "Excel-Sheet Onur, EN 1992-1-1 6.2.2"
+    },
+    {
+      "id": "EN-4", "description": "high compression, sigma_cp limited to 0.2 f_cd",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "f_ck": 30, "gamma_c": 1.5, "alpha_cc": 1.0, "c_rd_c_gamma": 0.18, "k_1": 0.15,
+                 "n": 2500, "m": 30, "v": 200 },
+      "expected": { "v_rd": 274.96, "utilization": 0.7274 }, "tolerance": 0.005,
+      "source": "Excel-Sheet Onur, EN 1992-1-1 6.2.2"
+    },
+    {
+      "id": "EN-5", "description": "M < 0, unsymmetric reinforcement",
+      "input": { "h": 0.35, "a_sp": 7.85, "c_p": 0.05, "a_sn": 3.93, "c_n": 0.06,
+                 "f_ck": 35, "gamma_c": 1.5, "alpha_cc": 1.0, "c_rd_c_gamma": 0.18, "k_1": 0.15,
+                 "n": 800, "m": -40, "v": 120 },
+      "expected": { "v_rd": 248.14, "utilization": 0.4836 }, "tolerance": 0.005,
+      "source": "Excel-Sheet Onur, EN 1992-1-1 6.2.2"
+    },
+    {
+      "id": "EN-6", "description": "high A_sl, (6.2.a) governs",
+      "input": { "h": 0.30, "a_sp": 20.94, "c_p": 0.05, "a_sn": 20.94, "c_n": 0.05,
+                 "f_ck": 30, "gamma_c": 1.5, "alpha_cc": 1.0, "c_rd_c_gamma": 0.18, "k_1": 0.15,
+                 "n": 300, "m": 50, "v": 200 },
+      "expected": { "v_rd": 203.96, "utilization": 0.9806 }, "tolerance": 0.005,
+      "source": "Excel-Sheet Onur, EN 1992-1-1 6.2.2"
+    }
+  ],
+  "sia262": [
+    {
+      "id": "SIA-1", "description": "level 1, Gl. (38)",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "d_vp": null, "d_vn": null,
+                 "f_ck": 30, "gamma_c": 1.5, "f_yk": 500, "gamma_s": 1.15, "d_max": 32,
+                 "eta_t": 1.0, "level": "level1", "curtailed": false,
+                 "n": 500, "m": 20, "v": 80 },
+      "expected": { "m_rd": 122.0, "eps_v": 2.1739, "k_d": 0.6053, "v_rd": 165.76, "utilization": 0.4826 },
+      "tolerance": 0.005,
+      "source": { "m_rd": "commercial program, general interaction diagram, N constant, concrete diagram type 2, eps_cu 3.5 per mille, eps_su 12 per mille", "eps_v, k_d, v_rd, utilization": "hand calculation Onur, Excel SIA262_Querkraft_Kontrolle, with m_Rd from the commercial program" }
+    },
+    {
+      "id": "SIA-2", "description": "level 2, Gl. (39), m_Rd from the M-N curve",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "d_vp": null, "d_vn": null,
+                 "f_ck": 30, "gamma_c": 1.5, "f_yk": 500, "gamma_s": 1.15, "d_max": 32,
+                 "eta_t": 1.0, "level": "level2", "curtailed": false,
+                 "n": 500, "m": 20, "v": 80 },
+      "expected": { "m_rd": 122.0, "eps_v": 0.3564, "k_d": 0.9034, "v_rd": 247.41, "utilization": 0.3234 },
+      "tolerance": 0.005,
+      "source": { "m_rd": "commercial program, general interaction diagram, N constant, concrete diagram type 2, eps_cu 3.5 per mille, eps_su 12 per mille", "eps_v, k_d, v_rd, utilization": "hand calculation Onur, Excel SIA262_Querkraft_Kontrolle, with m_Rd from the commercial program" }
+    },
+    {
+      "id": "SIA-3", "description": "plastic, Gl. (41)",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "d_vp": null, "d_vn": null,
+                 "f_ck": 30, "gamma_c": 1.5, "f_yk": 500, "gamma_s": 1.15, "d_max": 32,
+                 "eta_t": 1.0, "level": "plastic", "curtailed": false,
+                 "n": 500, "m": 20, "v": 80 },
+      "expected": { "m_rd": 122.0, "eps_v": 3.2609, "k_d": 0.5055, "v_rd": 138.44, "utilization": 0.5779 },
+      "tolerance": 0.005,
+      "source": { "m_rd": "commercial program, general interaction diagram, N constant, concrete diagram type 2, eps_cu 3.5 per mille, eps_su 12 per mille", "eps_v, k_d, v_rd, utilization": "hand calculation Onur, Excel SIA262_Querkraft_Kontrolle, with m_Rd from the commercial program" }
+    },
+    {
+      "id": "SIA-4", "description": "level 2, curtailed reinforcement (4.3.3.2.4)",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "d_vp": null, "d_vn": null,
+                 "f_ck": 30, "gamma_c": 1.5, "f_yk": 500, "gamma_s": 1.15, "d_max": 32,
+                 "eta_t": 1.0, "level": "level2", "curtailed": true,
+                 "n": 500, "m": 20, "v": 80 },
+      "expected": { "m_rd": 122.0, "eps_v": 0.5346, "k_d": 0.8618, "v_rd": 236.01, "utilization": 0.3390 },
+      "tolerance": 0.005,
+      "source": { "m_rd": "commercial program, general interaction diagram, N constant, concrete diagram type 2, eps_cu 3.5 per mille, eps_su 12 per mille", "eps_v, k_d, v_rd, utilization": "hand calculation Onur, Excel SIA262_Querkraft_Kontrolle, with m_Rd from the commercial program" }
+    },
+    {
+      "id": "SIA-5", "description": "level 2, M < 0, unsymmetric, d_v given",
+      "input": { "h": 0.35, "a_sp": 7.85, "c_p": 0.05, "a_sn": 3.93, "c_n": 0.06,
+                 "d_vp": null, "d_vn": 0.27,
+                 "f_ck": 35, "gamma_c": 1.5, "f_yk": 500, "gamma_s": 1.15, "d_max": 16,
+                 "eta_t": 0.85, "level": "level2", "curtailed": false,
+                 "n": 800, "m": -40, "v": 120 },
+      "expected": { "m_rd": -164.8, "eps_v": 0.5276, "k_d": 0.8133, "v_rd": 259.83, "utilization": 0.4618 },
+      "tolerance": 0.005,
+      "source": { "m_rd": "commercial program, general interaction diagram, N constant, concrete diagram type 2, eps_cu 3.5 per mille, eps_su 12 per mille; SIA-5: QS-2, reduction factor of the commercial program 0.895 -> f_cd 19.8 = eta_fc(2025) eta_t f_ck / gamma_c", "eps_v, k_d, v_rd, utilization": "hand calculation Onur, Excel SIA262_Querkraft_Kontrolle, with m_Rd from the commercial program" }
+    },
+    {
+      "id": "SIA-6", "description": "level 2, tension in the section",
+      "input": { "h": 0.30, "a_sp": 5.65, "c_p": 0.05, "a_sn": 5.65, "c_n": 0.05,
+                 "d_vp": null, "d_vn": null,
+                 "f_ck": 30, "gamma_c": 1.5, "f_yk": 500, "gamma_s": 1.15, "d_max": 32,
+                 "eta_t": 1.0, "level": "level2", "curtailed": false,
+                 "n": -100, "m": 15, "v": 40 },
+      "expected": { "m_rd": 50.9, "eps_v": 0.6406, "k_d": 0.8388, "v_rd": 229.71, "utilization": 0.1741 },
+      "tolerance": 0.005,
+      "source": { "m_rd": "commercial program, general interaction diagram, N constant, concrete diagram type 2, eps_cu 3.5 per mille, eps_su 12 per mille", "eps_v, k_d, v_rd, utilization": "hand calculation Onur, Excel SIA262_Querkraft_Kontrolle, with m_Rd from the commercial program" }
+    }
+  ]
+}

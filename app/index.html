@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Querkraftnachweis</title>
+    <!-- icon inside the page: no request for favicon.ico (404) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23fff'/%3E%3Cpath d='M4 26 L28 6' fill='none' stroke='%231f4e79' stroke-width='3'/%3E%3Cpath d='M4 6 H28 M4 26 H28' fill='none' stroke='%231f4e79' stroke-width='2'/%3E%3C/svg%3E">
+    <!-- theme before the style sheet, so a dark page does not flash white;
+         theme.js does the same later and follows changes -->
+    <script>
+        (function () {
+            var choice = 'system';
+            try {
+                choice = window.localStorage.getItem('shear-check.theme') || 'system';
+            } catch (error) {
+                // no storage: follow the system
+            }
+            var dark = choice === 'dark' || (choice !== 'light' &&
+                window.matchMedia('(prefers-color-scheme: dark)').matches);
+            document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        })();
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- The texts of this page are written by app.js in the chosen language
+     (data-i18n = key of the text in i18n.js). The German texts here are
+     only what is seen before the script has run. -->
+
+<!-- landing page: the norm has to be chosen first -->
+<main id="landing">
+    <div class="switches">
+        <nav class="themes" aria-label="Darstellung / Theme">
+            <button type="button" data-theme-choice="light" data-i18n="theme.light">Hell</button>
+            <button type="button" data-theme-choice="dark" data-i18n="theme.dark">Dunkel</button>
+            <button type="button" data-theme-choice="system" data-i18n="theme.system">System</button>
+        </nav>
+        <nav class="languages" aria-label="Sprache / Language">
+            <button type="button" data-language="de">DE</button>
+            <button type="button" data-language="en">EN</button>
+        </nav>
+    </div>
+    <h1 data-i18n="title">Querkraftnachweis ohne Querkraftbewehrung</h1>
+    <p data-i18n="landing.intro">Querkraftwiderstand von Platten und
+        Schalen ohne Querkraftbewehrung, Werte pro Laufmeter.</p>
+    <!-- Shown by the check at the end of the page if the app did not
+         start. Then app.js has not run, so both languages stand here. -->
+    <p id="start-error-file" class="error start-error" hidden>Diese Seite
+        muss über einen Webserver geöffnet werden, siehe README.<br>
+        <span lang="en">This page has to be opened through a web server, see
+        README.</span></p>
+    <p id="start-error-load" class="error start-error" hidden>Die App
+        konnte nicht geladen werden. Seite mit Ctrl+F5 neu laden; Details
+        in der Browser-Konsole (F12).<br>
+        <span lang="en">The app could not be loaded. Reload the page with
+        Ctrl+F5; details in the browser console (F12).</span></p>
+    <h2 data-i18n="landing.choose">Norm wählen</h2>
+    <nav class="norms">
+        <a class="norm" href="#sia262">
+            <strong>SIA 262:2025</strong>
+            <span data-i18n="landing.sia">4.3.3.2, Gl. (35) bis (41)</span>
+        </a>
+        <a class="norm" href="#en1992">
+            <strong>EN 1992-1-1</strong>
+            <span data-i18n="landing.en">6.2.2 (1), Gl. (6.2.a) und (6.2.b)</span>
+        </a>
+    </nav>
+    <p class="small validation" data-i18n="validation.note"></p>
+    <noscript><p class="error">Diese Seite braucht JavaScript. / This page
+        needs JavaScript.</p></noscript>
+</main>
+
+<!-- calculator -->
+<main id="calculator" hidden>
+    <header>
+        <div class="switches">
+            <nav class="themes" aria-label="Darstellung / Theme">
+                <button type="button" data-theme-choice="light" data-i18n="theme.light">Hell</button>
+                <button type="button" data-theme-choice="dark" data-i18n="theme.dark">Dunkel</button>
+                <button type="button" data-theme-choice="system" data-i18n="theme.system">System</button>
+            </nav>
+            <nav class="languages" aria-label="Sprache / Language">
+                <button type="button" data-language="de">DE</button>
+                <button type="button" data-language="en">EN</button>
+            </nav>
+        </div>
+        <h1 data-i18n="title">Querkraftnachweis ohne Querkraftbewehrung</h1>
+        <p><strong id="norm-name"></strong>
+            <a href="#" data-i18n="header.change_norm">Norm wechseln</a></p>
+    </header>
+
+    <section id="drop-zone">
+        <span data-i18n="file.label">Datei mit N, M, V hierher ziehen oder
+            auswählen:</span>
+        <!-- the file input of the browser has a text of its own that does
+             not follow the language of the page, so it is hidden -->
+        <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+        <button type="button" id="choose-file" data-i18n="file.choose">Datei
+            auswählen</button>
+        <button type="button" id="remove-file" data-i18n="file.remove">Lastpunkte
+            entfernen</button>
+        <label id="sheet-choice" class="inline" hidden>
+            <span data-i18n="file.sheet">Blatt:</span>
+            <select id="sheet"></select></label>
+        <p class="small" data-i18n="file.help"></p>
+        <details id="paste-box">
+            <summary data-i18n="paste.summary">Werte einfügen</summary>
+            <p class="small" data-i18n="paste.help"></p>
+            <textarea id="paste" rows="6" spellcheck="false"></textarea>
+            <button type="button" id="paste-apply" data-i18n="paste.apply">Übernehmen</button>
+        </details>
+        <p id="file-message"></p>
+    </section>
+
+    <div class="layout">
+        <form id="inputs" autocomplete="off">
+            <fieldset>
+                <legend data-i18n="section.legend">Querschnitt</legend>
+                <p class="small">
+                    <span data-i18n="section.width">b = 1000 mm, Werte pro Laufmeter.</span>
+                    <button type="button" id="example"
+                            data-i18n="example.load">Beispiel laden</button>
+                    <span id="example-undo" hidden>
+                        <span data-i18n="example.loaded">Beispielwerte
+                            geladen –</span>
+                        <button type="button" id="undo"
+                                data-i18n="example.undo">Rückgängig</button>
+                    </span></p>
+                <label><span data-i18n="label.h_">Höhe h [m]</span>
+                    <input type="text" inputmode="decimal" id="h_" value="" data-example="0.30"></label>
+
+                <h3 data-i18n="side.plus">Zugseite bei M &gt; 0</h3>
+                <label><span data-i18n="label.a_sp">Bewehrung A_s [cm²/m]</span>
+                    <input type="text" inputmode="decimal" id="a_sp" value="" data-example="5.65"></label>
+                <label><span data-i18n="label.c_p">Achsabstand c [m]</span>
+                    <input type="text" inputmode="decimal" id="c_p" value="" data-example="0.05"></label>
+                <label data-norm="sia262"><span data-i18n="label.d_vp">d_v [m]</span>
+                    <input type="text" inputmode="decimal" id="d_vp" value=""></label>
+
+                <h3 data-i18n="side.minus">Zugseite bei M &lt; 0</h3>
+                <label><span data-i18n="label.a_sn">Bewehrung A_s [cm²/m]</span>
+                    <input type="text" inputmode="decimal" id="a_sn" value="" data-example="5.65"></label>
+                <label><span data-i18n="label.c_n">Achsabstand c [m]</span>
+                    <input type="text" inputmode="decimal" id="c_n" value="" data-example="0.05"></label>
+                <label data-norm="sia262"><span data-i18n="label.d_vn">d_v [m]</span>
+                    <input type="text" inputmode="decimal" id="d_vn" value=""></label>
+                <p class="small" data-i18n="section.c_help">c: Abstand vom
+                    Rand bis zum Schwerpunkt der Bewehrung, d = h − c.</p>
+            </fieldset>
+
+            <fieldset>
+                <legend data-i18n="materials.legend">Baustoffe</legend>
+                <label><span data-i18n="label.f_ck">Beton f_ck [N/mm²] (bis 50)</span>
+                    <input type="text" inputmode="decimal" id="f_ck" value="" data-example="30"></label>
+                <label><span data-i18n="label.gamma_c">γ_c</span>
+                    <input type="text" inputmode="decimal" id="gamma_c" value=""></label>
+
+                <div data-norm="sia262">
+                    <label><span data-i18n="label.f_yk">Betonstahl f_sk [N/mm²]</span>
+                        <input type="text" inputmode="decimal" id="f_yk" value="" data-example="500"></label>
+                    <label><span data-i18n="label.gamma_s">γ_s</span>
+                        <input type="text" inputmode="decimal" id="gamma_s" value=""></label>
+                    <label><span data-i18n="label.d_max">Grösstkorn D_max [mm]</span>
+                        <input type="text" inputmode="decimal" id="d_max" value="" data-example="32"></label>
+                    <div id="eta_t" class="choice">
+                        <span class="choice-label" data-i18n="eta_t.label">η_t
+                            (4.2.1.3), bitte wählen:</span>
+                        <!-- no option is chosen in advance -->
+                        <div class="options">
+                            <label class="check">
+                                <input type="radio" name="eta_t" value="0.85">
+                                <span data-number="0.85">0,85</span></label>
+                            <label class="check">
+                                <input type="radio" name="eta_t" value="1.0">
+                                <span data-number="1.0">1,0</span></label>
+                            <label class="check">
+                                <input type="radio" name="eta_t" value="1.2">
+                                <span data-number="1.2">1,2</span></label>
+                        </div>
+                        <p class="small" data-i18n="eta_t.help"></p>
+                    </div>
+                </div>
+
+                <div data-norm="en1992">
+                    <label><span data-i18n="label.alpha_cc">α_cc</span>
+                        <input type="text" inputmode="decimal" id="alpha_cc" value=""></label>
+                    <label><span data-i18n="label.c_rd_c_gamma">C_Rd,c · γ_c</span>
+                        <input type="text" inputmode="decimal" id="c_rd_c_gamma" value=""></label>
+                    <label><span data-i18n="label.k_1">k_1</span>
+                        <input type="text" inputmode="decimal" id="k_1" value=""></label>
+                    <p class="small" data-i18n="ndp.help"></p>
+                </div>
+            </fieldset>
+
+            <fieldset data-norm="sia262">
+                <legend data-i18n="eps_v.legend">Dehnung ε_v</legend>
+                <div id="level" class="choice">
+                    <span class="choice-label" data-i18n="level.label">Näherungsstufe,
+                        bitte wählen:</span>
+                    <!-- no option is chosen in advance -->
+                    <label class="check">
+                        <input type="radio" name="level" value="level1">
+                        <span data-i18n="level.level1">Stufe 1, Gl. (38)</span></label>
+                    <label class="check">
+                        <input type="radio" name="level" value="level2">
+                        <span data-i18n="level.level2">Stufe 2, Gl. (39)</span></label>
+                    <label class="check">
+                        <input type="radio" name="level" value="plastic">
+                        <span data-i18n="level.plastic">plastisch, Gl. (41)</span></label>
+                </div>
+                <label class="check">
+                    <input type="checkbox" id="curtailed">
+                    <span data-i18n="label.curtailed">Längsbewehrung abgestuft</span></label>
+            </fieldset>
+
+            <fieldset>
+                <legend data-i18n="loads.legend">Lastpunkte</legend>
+                <label class="check">
+                    <input type="checkbox" id="plaxis" checked>
+                    <span data-i18n="label.plaxis">Druck negativ (Plaxis)</span></label>
+                <p class="small" data-i18n="loads.help"></p>
+            </fieldset>
+        </form>
+
+        <section id="output">
+            <div id="messages" class="error" hidden></div>
+            <p id="example-note" class="example-note" hidden
+               data-i18n="example.note">Beispielwerte, nicht projektbezogen</p>
+            <!-- hidden until there is a result: Plotly needs the size of
+                 the visible box when it draws -->
+            <div id="diagram" hidden></div>
+            <ul id="hints" class="small"></ul>
+        </section>
+    </div>
+
+    <section>
+        <p id="summary"></p>
+        <p><button type="button" id="export" data-i18n="export.csv" hidden>CSV
+            exportieren</button></p>
+        <div id="table"></div>
+    </section>
+
+    <footer class="small">
+        <!-- the key depends on the norm, set by app.js (route) -->
+        <p id="validation-footer" class="validation" data-i18n="validation.note"></p>
+        <a href="https://github.com/onurkoc/shear-check"
+           data-i18n="footer.source">Quellcode</a>
+    </footer>
+</main>
+
+<!-- libraries, stored locally (no CDN) -->
+<script src="vendor/plotly-basic-4.1.2.min.js"></script>
+<script type="module">
+    import * as XLSX from './vendor/xlsx-0.20.3.mjs';
+    import { start } from './app.js';
+    // plotly-basic-4.1.2.min.js is a classic script and sets window.Plotly
+    start({ XLSX: XLSX, Plotly: window.Plotly });
+    window.app_started = true;
+</script>
+<!-- No silent page: a classic script (no module) checks after loading
+     whether start() has run. Modules do not load when the file is opened
+     directly from the disk (file://). -->
+<script>
+    window.addEventListener('load', function () {
+        // the module script above runs before the load event
+        if (window.app_started !== true) {
+            var id = (window.location.protocol === 'file:') ?
+                'start-error-file' : 'start-error-load';
+            document.getElementById(id).hidden = false;
+        }
+    });
+</script>
+</body>
+</html>
